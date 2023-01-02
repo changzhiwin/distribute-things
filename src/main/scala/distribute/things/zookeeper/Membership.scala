@@ -10,26 +10,6 @@ import org.apache.zookeeper.ZooDefs.Ids
 
 object Membership {
 
-  class ConnectionWatcher extends Watcher {
-
-    var zk: ZooKeeper = _
-
-    val connectedSignal = new CountDownLatch(1)
-
-    def connect(hosts: String): Unit = {
-      zk = new ZooKeeper(hosts, 5000, this)
-      connectedSignal.await()
-    }
-
-    def close(): Unit = zk.close()
-
-    override def process(event: WatchedEvent): Unit = {
-      if (event.getState() == KeeperState.SyncConnected) {
-        connectedSignal.countDown()
-      }
-    }
-  }
-
   class GroupOperator extends ConnectionWatcher {
     
     def create(groupName: String): Unit = {
